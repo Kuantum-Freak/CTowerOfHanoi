@@ -1,0 +1,30 @@
+#ifndef _BOARD_H_
+#define _BOARD_H_
+
+#include <string>
+
+//extern std::string board_e[85];
+
+//extern std::string &&board;
+
+extern int pHeight[3];
+extern int peices[4][3];
+
+extern const int B_HEIGHT;
+extern const int B_WIDTH;
+extern const int POLE_INDEX[3];
+extern const int HEIGHT_INDEX[3];
+
+void createBoard();
+
+void printBoard();
+
+void movePiece(const int polei, const int polef);
+
+void removePeice(const int pole);
+
+void addPeice(const int pole, const int width);
+
+int getHalfWidth(int peice);
+
+#endif

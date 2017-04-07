@@ -1,0 +1,219 @@
+/* 
+ * Copyright (c) 2017 The Gupta Empire - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ *
+ * Written by Aryan Gupta <me@theguptaempire.net>
+ * 
+ * =============================================================================
+ * @author 			Aryan Gupta
+ * @project 		
+ * @title 			
+ * @date			(YYYY-MM-DD)
+ * @fversion		1.5.3
+ * @description 	
+ * =============================================================================
+ */
+#include <iostream>
+#include <string>
+
+#include ".\h\board.h"
+
+#define LOG(a) std::cout << a << std::endl
+//#define DEBUG
+
+using std::cout;
+using std::endl;
+
+/*
+const std::string eboard[] = 
+{
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	"        |                |                |        ",	
+	" =======|=======  =======|=======  =======|======= ",	
+};
+//*/
+std::string board[] = 
+{
+	"               |                              |                              |               ",	
+	"               |                              |                              |               ",	
+	"           XXXX|XXXX                          |                              |               ",	
+	"           XXXX|XXXX                          |                              |               ",	
+	"           XXXX|XXXX                          |                              |               ",	
+	"       XXXXXXXX|XXXXXXXX                      |                              |               ",	
+	"       XXXXXXXX|XXXXXXXX                      |                              |               ",	
+	"       XXXXXXXX|XXXXXXXX                      |                              |               ",	
+	"  XXXXXXXXXXXXX|XXXXXXXXXXXXX                 |                              |               ",	
+	"  XXXXXXXXXXXXX|XXXXXXXXXXXXX                 |                              |               ",	
+	"  XXXXXXXXXXXXX|XXXXXXXXXXXXX                 |                              |               ",	
+	" =============================  =============================  ============================= ",
+	"               1                              2                              3               "
+};
+
+int pHeight[3] =     {3, 0, 0};
+int peices[4][3] =  {{4, 4, 4},
+					 {3, 0, 0},
+					 {2, 0, 0},
+					 {1, 0, 0}}; // THIS IS STORED BACKWARDS FOR EASE OF USE;
+
+const int B_HEIGHT = 13;
+const int B_WIDTH = board[0].size();
+const int POLE_INDEX[] = {15, 46, 77};
+const int HEIGHT_INDEX[] = {8, 5, 2};
+
+void printBoard() {
+	using std::cout;
+	using std::endl;
+	
+	for(int i = 0; i < B_HEIGHT; ++i) {
+		for(int j = 0; j < B_WIDTH; ++j)
+			cout << board[i][j];
+		cout << endl;
+	}
+}
+
+void movePiece(int polei, int polef) {
+	polei--; // decrement so it works well with arrays
+	polef--;
+	
+	// GET INITIAL POLE DATA
+	int topPeicei = pHeight[polei]; // get top most peice of initial pole
+	if(topPeicei == 0)
+		throw 1; // thow excepton that the initial peice has no peices
+	int topPeiceWidthi = peices[topPeicei][polei]; // find width of top most peice
+	
+	#ifdef DEBUG
+	LOG("Peice 1 info(topPeicei, topPeiceWidthi): " << topPeicei << " " << topPeiceWidthi);
+	#endif
+	
+	// GET FINAL PEICE DATA
+	int topPeicef = pHeight[polef]; // get the index of the topmost peice on the pole
+	int topPeiceWidthf = peices[topPeicef][polef]; // get the size of that peice
+	
+	if(topPeiceWidthf < topPeiceWidthi) { // we cant move a bigger peice on top of a smaller peice
+		throw 2;
+	}
+	
+	#ifdef DEBUG
+	LOG("Final Peice info (topPeicef, topPeiceWidthf): " << topPeicef << " " << topPeiceWidthf);
+	#endif
+	
+	// REMOVE THE PEICE
+	removePeice(polei);
+	peices[topPeicei][polei] = 0; // set that peice to 0
+	pHeight[polei]--; // decrement the height of the blocks on that pole
+	
+	#ifdef DEBUG
+	LOG("Removed a peice. changing internals: " << topPeicei << " " << polei << "to 0");
+	#endif
+	
+	// ADD THE PEICE
+	addPeice(polef, topPeiceWidthi);
+	peices[topPeicef + 1][polef] = topPeiceWidthi; //set that index to the width of the peice
+	pHeight[polef]++; // increment height
+	
+	#ifdef DEBUG
+	cout << endl << endl;
+	for(auto &i : peices) {
+		for(auto &e: i) {
+			cout << e;
+		}
+		cout << endl;
+	}
+	cout << endl;
+	
+	for(auto &i : pHeight) {
+		cout << i;
+	}
+	
+	cout << endl << endl;
+	#endif
+}
+
+void removePeice(const int pole) {
+	int peice = peices[pHeight[pole]][pole];
+	int hWidth = getHalfWidth(peice);
+	
+	#ifdef DEBUG
+	LOG("Removing the peice " << peice << " Its half width is: " << hWidth << " pole " << pole);
+	#endif
+	
+	for(int i = HEIGHT_INDEX[pHeight[pole] - 1]; // Start at the height where the peice is
+	i < HEIGHT_INDEX[pHeight[pole] - 1] + 3; // Go down 3 (the peices are 3 X's high)
+	i++) {
+		#ifdef DEBUG
+		LOG("i: " << i << " Removing from height : " << HEIGHT_INDEX[pHeight[pole] - 1] << " to " << HEIGHT_INDEX[pHeight[pole] - 1] + 3);
+		#endif
+		for(int j = POLE_INDEX[pole] + 1; // get pole index (width from left)
+		j < POLE_INDEX[pole] + hWidth; // move to the RIGHT half of the peices width
+		++j) {
+			#ifdef DEBUG
+			LOG("j: " << j << "Removing from width : " << POLE_INDEX[pole] << " to " << POLE_INDEX[pole] + hWidth);
+			#endif
+			board[i][j] = ' ';
+		}
+		
+		for(int j = POLE_INDEX[pole] - 1; // get pole index (width from left)
+		j > POLE_INDEX[pole] - hWidth; // move to the LEFT half of the peices width
+		--j) {
+			#ifdef DEBUG
+			LOG("j: " << j << "Removing from width : " << POLE_INDEX[pole] << " to " << POLE_INDEX[pole] + hWidth);
+			#endif
+			board[i][j] = ' ';
+		}
+	}
+}
+
+void addPeice(const int pole, const int width) {
+	int hWidth = getHalfWidth(width);
+	
+	#ifdef DEBUG
+	LOG("Adding from width : " << POLE_INDEX[pole] << " to " << POLE_INDEX[pole] + hWidth);
+	#endif
+	
+	for(int i = HEIGHT_INDEX[pHeight[pole]]; // Start at the height where the peice is
+	i < HEIGHT_INDEX[pHeight[pole]] + 3; // Go down 3 (the peices are 3 X's high)
+	i++) {
+		#ifdef DEBUG
+		LOG("i: " << i << " Adding to height : " << HEIGHT_INDEX[pHeight[pole]] << " to " << HEIGHT_INDEX[pHeight[pole]] + 3);
+		#endif
+		for(int j = POLE_INDEX[pole] + 1; // get pole index (width from left)
+		j < POLE_INDEX[pole] + hWidth; // move to the RIGHT half of the peices width
+		++j) {
+			#ifdef DEBUG
+			LOG("j:" << j << " adding to width : " << POLE_INDEX[pole] + 1 << " to " << POLE_INDEX[pole] + hWidth);
+			#endif
+			board[i][j] = 'X';
+		}
+		
+		for(int j = POLE_INDEX[pole] - 1; // get pole index (width from left)
+		j > POLE_INDEX[pole] - hWidth; // move to the LEFT half of the peices width
+		--j) {
+			#ifdef DEBUG
+			LOG("j:" << j << "Adding from width : " << POLE_INDEX[pole] - 1 << " to " << POLE_INDEX[pole] - hWidth);
+			#endif
+			board[i][j] = 'X';
+		}
+	}
+}
+
+int getHalfWidth(int peice) {
+	switch(peice) {
+		case 3:
+			return 14;
+		case 2:
+			return 9;
+		case 1:
+			return 5;
+	}
+	return -1;
+}
