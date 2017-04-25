@@ -45,7 +45,7 @@ bool playerWin() {
 				((peices[1][2] + peices[2][2] + peices[3][2] + peices[4][2] + peices[5][2]) == 15);
 	} else if(diff == Xhard) { // EXTRA HARD
 		return  ((peices[1][1] + peices[2][1] + peices[3][1] + peices[4][1] + peices[5][1] + peices[6][1]) == 21) ||
-				((peices[1][2] + peices[2][2] + peices[3][2] + peices[4][2] + peices[5][2] + peices[6][1]) == 21);
+				((peices[1][2] + peices[2][2] + peices[3][2] + peices[4][2] + peices[5][2] + peices[6][2]) == 21);
 	} else {
 		return false;
 	}
