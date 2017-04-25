@@ -271,7 +271,7 @@ void movePeice(int polei, int polef) {
 	peices[topPeicef + 1][polef] = topPeiceWidthi; //set that index to the width of the peice
 	pHeight[polef]++; // increment height
 	
-	#ifdef _DEBUG
+	#ifdef DEBUG
 	cout << endl << endl;
 	for(auto &i : peices) {
 		for(auto &e: i) {
