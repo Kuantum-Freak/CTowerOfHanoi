@@ -34,6 +34,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <Windows.h>
 
 #include ".\h\board.h"
 #include ".\h\main.h"
@@ -87,6 +88,7 @@ int main(int argc, char* argv[]) {
 		} catch(...) {
 			cout << "Uncaught Exception... exiting" << endl; exit(-1);
 		}
+		Sleep(1000);
 	}
 	
 	clear();

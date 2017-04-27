@@ -22,7 +22,8 @@ OBJDIR = .\obj
 BINDIR = .\bin
 DATDIR = .\dat
 
-DEBUG = -g -DDEBUG=true
+DEBUG = -g 
+#-DDEBUG=false
 
 # ==============================  MACROS  ======================================
 CFLAGS = $(DEBUG) -Wall -std=c++17 -c
